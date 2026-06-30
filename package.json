@@ -53,6 +53,7 @@
       "dist-electron/**/*"
     ],
     "mac": {
+      "icon": "logo.png",
       "category": "public.app-category.productivity"
     }
   }
