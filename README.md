@@ -10,7 +10,7 @@ Download the latest installer from the GitHub Releases page.
 
 | Platform | Installer |
 |----------|-----------|
-| macOS | ![installer for mac](release/FocusFlow-1.0.0-arm64-mac.zipg) |
+| macOS | ![installer for mac](release/FocusFlow-1.0.0-arm64-mac.zip) |
 
 The application includes its own local SQLite database and will automatically create the required database on first launch.
 
