@@ -1,6 +1,6 @@
 # FocusFlow
 # Allow directories to be traversed
-!*/
+
 node_modules
 dist
 dist-electron
