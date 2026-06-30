@@ -1,0 +1,11 @@
+# FocusFlow
+
+node_modules
+dist
+dist-electron
+release
+*.log
+.DS_Store
+.vscode
+*.db
+*.db-journal

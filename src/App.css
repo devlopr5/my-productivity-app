@@ -1,0 +1,871 @@
+/* ─── App shell ───────────────────────────────────────────────────────────── */
+
+.app-shell {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* Google-style: white base, faint colour only at the corners */
+  background:
+    radial-gradient(ellipse 60% 50% at top left,    rgba(206, 198, 255, 0.40) 0%, transparent 68%),
+    radial-gradient(ellipse 55% 45% at bottom right, rgba(188, 214, 255, 0.34) 0%, transparent 68%),
+    #ffffff;
+  background-size: 180% 180%, 180% 180%, 100% 100%;
+  background-position: 0% 0%, 100% 100%, 0% 0%;
+  overflow: hidden;
+  animation: viewEnter var(--motion-emphasized) var(--ease-standard) forwards;
+}
+
+.app-shell--ambient-motion {
+  animation:
+    viewEnter var(--motion-emphasized) var(--ease-standard) forwards,
+    ambientDrift 28s ease-in-out infinite alternate;
+}
+
+/* ─── Shared glass card utility ───────────────────────────────────────────── */
+
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+}
+
+/* ─── Header ──────────────────────────────────────────────────────────────── */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  margin: 1rem 1rem 0;
+  flex-shrink: 0;
+}
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.app-logo {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #333;
+  letter-spacing: -0.02em;
+}
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.app-header-right--focus {
+  gap: 0.6rem;
+}
+
+.app-subtitle {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 500;
+}
+
+.ambient-motion-toggle,
+.pomodoro-view-toggle {
+  border: 1px solid var(--ui-soft-border);
+  border-radius: 999px;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  padding: 0.38rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background var(--motion-standard) var(--ease-standard),
+    color var(--motion-standard) var(--ease-standard),
+    border-color var(--motion-standard) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard);
+}
+
+.ambient-motion-toggle:hover,
+.pomodoro-view-toggle:hover {
+  background: color-mix(in srgb, var(--card-bg) 74%, #ffffff);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.ambient-motion-toggle[aria-pressed='true'],
+.pomodoro-view-toggle[aria-pressed='true'] {
+  border-color: color-mix(in srgb, var(--accent) 38%, transparent);
+  color: var(--accent-strong);
+}
+
+/* ─── Header live clock (always visible across all app states) ─────────────── */
+
+.app-header-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.app-header-time {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.app-header-date {
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* ─── Three-panel grid ────────────────────────────────────────────────────── */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 35fr 10px 65fr;
+  align-items: stretch;
+  column-gap: 0.25rem;
+  padding: 1rem;
+  flex: 1;
+  min-height: 0;
+  transition: grid-template-columns var(--motion-standard) var(--ease-standard);
+}
+
+.panel {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Left panel — TaskList provides its own glass-panel class */
+.panel--left {
+  min-height: 0;
+}
+
+/* Main panel — Pomodoro + Clock */
+.panel--main {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem;
+  overflow-y: auto;
+}
+
+/* Right panel — Clock */
+.panel--right {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 1rem;
+  gap: 0.85rem;
+}
+
+.dashboard-panel-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(0, 0, 0, 0.4);
+  margin: 0;
+}
+
+.panel-resize-handle {
+  align-self: stretch;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: col-resize;
+  transition: background var(--motion-standard) var(--ease-standard), border-color var(--motion-standard) var(--ease-standard);
+}
+
+.panel-resize-handle:hover {
+  background: rgba(116, 185, 255, 0.2);
+  border-color: rgba(58, 123, 213, 0.3);
+}
+
+.panel-resize-handle::after {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 28px;
+  margin: calc(50% - 14px) auto;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.layout-presets {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  padding: 0.25rem;
+}
+
+.layout-preset-btn {
+  border: none;
+  border-radius: 9px;
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.52);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background var(--motion-standard) var(--ease-standard), color var(--motion-standard) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
+}
+
+.layout-preset-btn.active {
+  background: rgba(255, 255, 255, 0.86);
+  color: #2f2f2f;
+}
+
+.layout-preset-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.45);
+  color: #3a3a3a;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1100px) {
+  .dashboard-grid,
+  .dashboard-grid--compact {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.8rem;
+    column-gap: 0;
+  }
+
+  .panel {
+    min-height: 240px;
+  }
+
+  .panel--right {
+    min-height: 180px;
+  }
+
+  .app-header {
+    flex-wrap: wrap;
+    row-gap: 0.65rem;
+  }
+
+  .app-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .layout-presets {
+    overflow-x: auto;
+    max-width: 70%;
+  }
+
+  .ambient-motion-toggle {
+    flex-shrink: 0;
+  }
+}
+
+@keyframes ambientDrift {
+  0% {
+    background-position: 0% 0%, 100% 100%, 0% 0%;
+  }
+  50% {
+    background-position: 4% 2%, 96% 98%, 0% 0%;
+  }
+  100% {
+    background-position: 8% 4%, 92% 96%, 0% 0%;
+  }
+}
+
+/* ─── Mode toggle (Clock | Pomodoro) ──────────────────────────────────────────── */
+
+.main-panel-toggle {
+  display: flex;
+  gap: 0.35rem;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0.3rem;
+  border-radius: 12px;
+  align-self: flex-start;
+}
+
+.main-panel-toggle-btn {
+  padding: 0.42rem 1.1rem;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--motion-standard) var(--ease-standard),
+    color var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.main-panel-toggle-btn.active {
+  background: rgba(255, 255, 255, 0.82);
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+
+.main-panel-toggle-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.40);
+  color: #444;
+  transform: translateY(-1px);
+}
+
+/* ─── Hero clock (Clock mode — fills the right panel) ─────────────────────── */
+
+.hero-clock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  width: 100%;
+}
+
+.hero-clock-time {
+  font-size: clamp(2rem, 6vw, 6rem);
+  font-weight: 800;
+  color: #2d2d2d;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Huge clock variant for dedicated clock mode */
+.hero-clock--huge .hero-clock-time {
+  font-size: clamp(4rem, 12vw, 8rem);
+  text-shadow: 0 6px 36px rgba(0,0,0,0.08);
+}
+
+.hero-clock--huge .hero-clock-date {
+  font-size: clamp(1rem, 2.2vw, 3rem);
+}
+
+.hero-clock-date {
+  font-size: clamp(0.9rem, 1.6vw, 3rem);
+  color: rgba(0, 0, 0, 0.40);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.pomodoro-divider{
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin: 1rem 0;
+}
+
+/* ─── Mini clock (shown above pomodoro in Pomodoro mode) ────────────────── */
+
+.mini-clock {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  padding: 0.55rem 1.75rem;
+  background: rgba(255, 255, 255, 0.38);
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.mini-clock-time {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.mini-clock-date {
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 0.40);
+  font-weight: 500;
+}
+
+/* ─── Pomodoro panel wrapper (Pomodoro mode) ────────────────────────── */
+
+.pomodoro-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.5rem 0;
+}
+
+/* ─── Placeholder content ─────────────────────────────────────────────────── */
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.placeholder-content--small {
+  opacity: 0.7;
+}
+
+.placeholder-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.placeholder-content--small .placeholder-icon {
+  font-size: 1.75rem;
+}
+
+.placeholder-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #444;
+}
+
+.placeholder-content--small .placeholder-title {
+  font-size: 0.9rem;
+}
+
+.placeholder-subtitle {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Focus Mode shell ────────────────────────────────────────────────────── */
+
+/* Entry animation: slight scale-up + fade for the focus mode transition */
+@keyframes focusModeEnter {
+  from { opacity: 0; transform: scale(0.985) translateY(10px); }
+  to   { opacity: 1; transform: scale(1)     translateY(0);    }
+}
+
+/* Dashboard / exit animation: plain fade */
+@keyframes viewEnter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.focus-shell {
+  animation: focusModeEnter var(--motion-emphasized) var(--ease-emphasized) forwards;
+}
+
+/* ── Phase-specific backgrounds ────────────────────────────────────────────── */
+
+/* Focus: white base, faint blue-lavender corner blobs */
+.focus-shell--focus {
+  background:
+    radial-gradient(ellipse 65% 55% at top left,    rgba(206, 198, 255, 0.34) 0%, transparent 68%),
+    radial-gradient(ellipse 55% 45% at bottom right, rgba(188, 214, 255, 0.30) 0%, transparent 68%),
+    #ffffff;
+}
+
+/* Break: white base, faint mint corner blobs */
+.focus-shell--break {
+  background:
+    radial-gradient(ellipse 65% 55% at top left,    rgba(206, 198, 255, 0.28) 0%, transparent 68%),
+    radial-gradient(ellipse 55% 45% at bottom right, rgba(188, 214, 255, 0.24) 0%, transparent 68%),
+    #ffffff;
+}
+
+/* Long break: white base, faint lavender corner blobs */
+.focus-shell--longBreak {
+  background:
+    radial-gradient(ellipse 65% 55% at top left,    rgba(214, 206, 255, 0.30) 0%, transparent 68%),
+    radial-gradient(ellipse 55% 45% at bottom right, rgba(192, 208, 255, 0.26) 0%, transparent 68%),
+    #ffffff;
+}
+
+/* ── Header in focus mode: slightly higher glass opacity ─────────────────── */
+
+.app-header--focus {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Focus main: vertical flex column, centres the timer ─────────────────── */
+
+.focus-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 1rem 1.5rem;
+  min-height: 0;
+}
+
+/* ── Active task banner ───────────────────────────────────────────────────── */
+
+.focus-task-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999px;
+  padding: 0.5rem 1.25rem;
+  max-width: 460px;
+  width: 100%;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.focus-task-banner--empty {
+  opacity: 0.65;
+}
+
+.focus-task-banner-icon {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.focus-task-banner-title {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.focus-task-banner-priority {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.focus-task-banner-priority--high   { background: rgba(225, 112, 85, 0.15); color: #c0392b; }
+.focus-task-banner-priority--medium { background: rgba(253, 203, 110, 0.20); color: #b7791f; }
+.focus-task-banner-priority--low    { background: rgba(85, 239, 196, 0.20); color: #00876a; }
+
+/* ── Timer card (the dominant element) ───────────────────────────────────── */
+
+.focus-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.25rem 2.75rem 2.5rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+}
+
+.focus-center.glass-card {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* "Focus Mode" badge in the header */
+.focus-active-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(116, 185, 255, 0.28);
+  color: #2563bb;
+  border: 1px solid rgba(116, 185, 255, 0.50);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Exit / back button — subtle, should not compete with the timer */
+.exit-focus-btn {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid rgba(0, 0, 0, 0.13);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.16);
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--motion-standard) var(--ease-standard),
+    color var(--motion-standard) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+  font-family: inherit;
+}
+
+.exit-focus-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  color: #333;
+  transform: translateY(-1px);
+}
+
+/* ─── Theme controls (Phase 4.3 / 4.4) ───────────────────────────────────── */
+
+.theme-controls {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 12px;
+  background: var(--ui-soft-bg);
+  border: 1px solid var(--ui-soft-border);
+}
+
+.theme-select-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+.theme-select {
+  border: 1px solid var(--ui-soft-border);
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-radius: 9px;
+  padding: 0.28rem 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.theme-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.theme-advanced-toggle {
+  border: 1px solid var(--ui-soft-border);
+  border-radius: 9px;
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  padding: 0.32rem 0.62rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background var(--motion-standard) var(--ease-standard),
+    color var(--motion-standard) var(--ease-standard),
+    border-color var(--motion-standard) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+}
+
+.theme-advanced-toggle:hover {
+  background: color-mix(in srgb, var(--card-bg) 75%, #ffffff);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.theme-advanced-toggle.active {
+  border-color: color-mix(in srgb, var(--accent) 48%, transparent);
+  color: var(--accent-strong);
+}
+
+.advanced-theme-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 260px;
+  z-index: 20;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  animation: viewEnter var(--motion-standard) var(--ease-standard) forwards;
+}
+
+.advanced-theme-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.advanced-theme-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.advanced-theme-color-input {
+  inline-size: 42px;
+  block-size: 28px;
+  border: 1px solid var(--ui-soft-border);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.advanced-theme-color-input:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  outline-offset: 2px;
+}
+
+.advanced-theme-error {
+  font-size: 0.68rem;
+  line-height: 1.25;
+  color: #b5484a;
+  margin: 0 0 0.2rem;
+}
+
+.advanced-theme-reset {
+  margin-top: 0.25rem;
+  border: 1px solid var(--ui-soft-border);
+  border-radius: 9px;
+  background: var(--ui-soft-bg);
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  transition:
+    background var(--motion-standard) var(--ease-standard),
+    color var(--motion-standard) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard),
+    opacity var(--motion-fast) var(--ease-standard);
+}
+
+.advanced-theme-reset:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 15%, var(--ui-soft-bg));
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.advanced-theme-reset:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ─── Token-based overrides ───────────────────────────────────────────────── */
+
+.app-shell {
+  background:
+    radial-gradient(ellipse 60% 50% at top left, var(--bg-blob-1) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 45% at bottom right, var(--bg-blob-2) 0%, transparent 70%),
+    var(--bg-base);
+}
+
+.glass-card {
+  background: var(--card-bg);
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+
+.app-title,
+.app-header-time,
+.hero-clock-time,
+.focus-task-banner-title {
+  color: var(--text-primary);
+}
+
+.app-subtitle,
+.app-header-date,
+.hero-clock-date,
+.dashboard-panel-title {
+  color: var(--text-muted);
+}
+
+.panel-resize-handle,
+.layout-presets,
+.main-panel-toggle {
+  background: var(--ui-soft-bg);
+  border-color: var(--ui-soft-border);
+}
+
+.layout-preset-btn,
+.main-panel-toggle-btn,
+.exit-focus-btn {
+  color: var(--text-secondary);
+}
+
+.layout-preset-btn.active,
+.main-panel-toggle-btn.active {
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.focus-shell--focus {
+  background:
+    radial-gradient(ellipse 65% 55% at top left, var(--focus-bg-focus-1) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 45% at bottom right, var(--focus-bg-focus-2) 0%, transparent 70%),
+    var(--bg-base);
+}
+
+.focus-shell--break {
+  background:
+    radial-gradient(ellipse 65% 55% at top left, var(--focus-bg-break-1) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 45% at bottom right, var(--focus-bg-break-2) 0%, transparent 70%),
+    var(--bg-base);
+}
+
+.focus-shell--longBreak {
+  background:
+    radial-gradient(ellipse 65% 55% at top left, var(--focus-bg-long-1) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 45% at bottom right, var(--focus-bg-long-2) 0%, transparent 70%),
+    var(--bg-base);
+}
+
+.focus-active-badge {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  color: var(--accent-strong);
+  border-color: color-mix(in srgb, var(--accent) 52%, transparent);
+}
+
+.exit-focus-btn {
+  border-color: var(--ui-soft-border);
+  background: var(--card-bg);
+}
+
+.exit-focus-btn:hover {
+  background: color-mix(in srgb, var(--card-bg) 75%, #ffffff);
+  color: var(--text-primary);
+}
+
+@media (max-width: 1100px) {
+  .theme-controls {
+    order: 2;
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  .advanced-theme-panel {
+    left: 0;
+    right: auto;
+  }
+}

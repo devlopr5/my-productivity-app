@@ -1,0 +1,384 @@
+/* ─── Focus Timer container ────────────────────────────────────────────────── */
+
+.focus-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.focus-timer--dots {
+  gap: 1rem;
+}
+
+/* ─── Phase label ─────────────────────────────────────────────────────────── */
+
+.focus-phase-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(0, 0, 0, 0.40);
+  margin: 0;
+}
+
+/* ─── Ring SVG ────────────────────────────────────────────────────────────── */
+
+.focus-ring-wrapper {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  flex-shrink: 0;
+}
+
+.focus-timer--dots .focus-ring-wrapper {
+  display: none;
+}
+
+.focus-dots-view {
+  width: min(100%, 540px);
+  display: flex;
+  justify-content: center;
+}
+
+.focus-dot-grid {
+  width: 100%;
+  aspect-ratio: 21/15;
+  display: grid;
+  grid-template-columns: repeat(15, minmax(0, 1fr));
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+  gap: 1px;
+  padding: 8px;
+}
+
+.focus-dot {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ui-soft-bg) 92%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--ui-soft-border) 78%, transparent);
+  width: 6px;
+  height: 6px;
+  transition:
+    background var(--motion-standard) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard),
+    border-color var(--motion-standard) var(--ease-standard);
+}
+
+.focus-dot--active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.focus-timer--dots .focus-controls {
+  margin-top: 0.25rem;
+}
+
+.focus-ring-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Animate the progress ring stroke on every update */
+.focus-ring-progress {
+  transition: stroke-dashoffset 1s linear;
+}
+
+/* ─── Overlay digits inside the ring ─────────────────────────────────────── */
+
+.focus-ring-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  pointer-events: none;
+}
+
+.focus-timer-digits {
+  font-size: 5rem;
+  font-weight: 800;
+  color: #222;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.focus-timer-phase-text {
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+/* ─── Cycle progress dots ─────────────────────────────────────────────────── */
+
+.focus-cycle-dots {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+/* Center the cycle dots and controls in bar layout */
+.focus-timer--bar .focus-cycle-dots {
+  justify-content: center;
+  margin: 0.6rem 0 0.4rem;
+}
+
+.focus-cycle-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.12);
+  transition:
+    background var(--motion-standard) var(--ease-standard),
+    transform var(--motion-standard) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard);
+  flex-shrink: 0;
+}
+
+.focus-cycle-dot--done {
+  background: rgba(116, 185, 255, 0.70);
+}
+
+.focus-cycle-dot--active {
+  background: #3a7bd5;
+  transform: scale(1.35);
+  box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.22);
+}
+
+/* Phase-aware active dot colour */
+.focus-timer--break    .focus-cycle-dot--active { background: #00b894; box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.22); }
+.focus-timer--longBreak .focus-cycle-dot--active { background: #6c5ce7; box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.22); }
+
+/* ─── Controls ────────────────────────────────────────────────────────────── */
+
+.focus-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Center controls when using bar layout */
+.focus-timer--bar .focus-controls {
+  justify-content: center;
+}
+
+/* ─── Horizontal / Bar layout styles ───────────────────────────────────────── */
+.focus-timer--bar {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.focus-bar-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: stretch;
+  width: 100%;
+}
+
+.focus-bar-time {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 800;
+  color: #222;
+  text-align: center;
+  line-height: 1;
+}
+
+.focus-bar-track {
+  height: 28px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.focus-bar-fill {
+  height: 100%;
+  width: 0%;
+  transition: width var(--motion-slow) linear;
+  border-radius: 999px 0 0 999px;
+}
+
+.focus-timer--dots .focus-bar-main,
+.focus-timer--dots .focus-cycle-dots,
+.focus-timer--dots .focus-bar-track,
+.focus-timer--dots .focus-bar-fill {
+  display: none;
+}
+
+.pomodoro-split {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  align-items: stretch;
+}
+
+.pomodoro-split-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+}
+
+/* When stacked vertically (pomodoro mode preference), put timer on top and clock below */
+.pomodoro-split--stacked {
+  flex-direction: column;
+}
+
+.pomodoro-split--stacked .pomodoro-split-item--timer {
+  /* make timer take more vertical space */
+  min-height: 360px;
+}
+
+.pomodoro-split--stacked .pomodoro-split-item--clock {
+  min-height: 160px;
+}
+
+.focus-ctrl-btn {
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background var(--motion-standard) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-standard) var(--ease-standard),
+    opacity var(--motion-fast) var(--ease-standard);
+  line-height: 1;
+  font-family: inherit;
+}
+
+.focus-ctrl-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none !important;
+}
+
+/* ── Secondary (Skip / Reset) ── */
+
+.focus-ctrl-btn--secondary {
+  width: 62px;
+  height: 62px;
+  font-size: 1.35rem;
+  background: rgba(255, 255, 255, 0.16);
+  color: rgba(0, 0, 0, 0.50);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.focus-ctrl-btn--secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.28);
+  color: #333;
+  transform: scale(1.08);
+}
+
+/* ── Primary (Start / Pause) ── */
+
+.focus-ctrl-btn--primary {
+  padding: 1rem 3rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  border-radius: 18px;
+}
+
+/* focus phase — blue */
+.focus-ctrl-btn--focus {
+  background: linear-gradient(135deg, #74b9ff 0%, #3a7bd5 100%);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(58, 123, 213, 0.42);
+}
+
+.focus-ctrl-btn--focus:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 22px rgba(58, 123, 213, 0.52);
+}
+
+.focus-ctrl-btn--focus:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* break phase — green */
+.focus-ctrl-btn--break {
+  background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(0, 184, 148, 0.38);
+}
+
+.focus-ctrl-btn--break:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 22px rgba(0, 184, 148, 0.48);
+}
+
+/* longBreak phase — purple */
+.focus-ctrl-btn--longBreak {
+  background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(108, 92, 231, 0.38);
+}
+
+.focus-ctrl-btn--longBreak:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 22px rgba(108, 92, 231, 0.48);
+}
+
+/* ─── Theme token overrides ───────────────────────────────────────────────── */
+
+.focus-phase-label,
+.focus-timer-phase-text {
+  color: var(--text-muted);
+}
+
+.focus-timer-digits,
+.focus-bar-time {
+  color: var(--text-primary);
+}
+
+.focus-cycle-dot {
+  background: var(--ui-soft-bg);
+}
+
+.focus-cycle-dot--done {
+  background: color-mix(in srgb, var(--accent) 72%, transparent);
+}
+
+.focus-cycle-dot--active {
+  background: var(--accent-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-strong) 30%, transparent);
+}
+
+.focus-bar-track {
+  background: var(--ui-soft-bg);
+}
+
+.focus-ctrl-btn--secondary {
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  border-color: var(--ui-soft-border);
+}
+
+.focus-ctrl-btn--secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--card-bg) 70%, #ffffff);
+  color: var(--text-primary);
+}
+
+.focus-ctrl-btn--focus {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  color: var(--accent-contrast);
+}
+
+:root[data-color-scheme='dark'] .focus-ctrl-btn--focus {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+}

@@ -1,0 +1,51 @@
+.clock-widget {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px) saturate(1.12);
+  -webkit-backdrop-filter: blur(14px) saturate(1.12);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: background 0.3s ease;
+}
+
+.clock-widget:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.clock-time {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #333;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+
+.clock-date {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.50);
+  font-weight: 500;
+}
+
+/* ─── Theme token overrides ───────────────────────────────────────────────── */
+
+.clock-widget {
+  background: var(--panel-bg);
+  border-color: var(--panel-border);
+}
+
+.clock-widget:hover {
+  background: var(--panel-item-bg);
+}
+
+.clock-time {
+  color: var(--text-primary);
+}
+
+.clock-date {
+  color: var(--text-secondary);
+}
+
