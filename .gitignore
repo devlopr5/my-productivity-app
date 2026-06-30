@@ -1,9 +1,11 @@
 # FocusFlow
-
+# Allow directories to be traversed
+!*/
 node_modules
 dist
 dist-electron
-release
+release/*
+!release/FocusFlow-1.0.0-arm64-mac.zip
 *.log
 .DS_Store
 .vscode
