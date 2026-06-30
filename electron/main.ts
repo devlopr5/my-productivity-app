@@ -34,7 +34,7 @@ function createWindow(): void {
     // Open DevTools in development
     mainWindow.webContents.openDevTools();
   } else {
-    const prodPath = path.join(__dirname, '../dist/index.html');
+    const prodPath = path.join(__dirname, '../../dist/index.html');
     console.log('Loading prod file:', prodPath);
     mainWindow.loadFile(prodPath);
   }
